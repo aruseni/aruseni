@@ -8,6 +8,16 @@
   <link rel="shortcut icon" href="/favicon.ico">
   <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
   <title>Arseny Hofman — CV</title>
+  <script>
+    (function () {
+      try {
+        var saved = localStorage.getItem('cv-theme');
+        if (saved === 'light' || saved === 'dark') {
+          document.documentElement.setAttribute('data-theme', saved);
+        }
+      } catch (e) {}
+    })();
+  </script>
   <style>
     :root {
       --text-primary: #1a202c;
@@ -16,6 +26,41 @@
       --border-color: #cbd5e1;
       --bg-page: #f8fafc;
       --bg-sheet: #ffffff;
+      --bg-code: #f1f5f9;
+      --shadow-sheet: 0 4px 20px rgba(0, 0, 0, 0.08);
+      --toggle-bg: #f1f5f9;
+      --toggle-hover: #e2e8f0;
+      color-scheme: light;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) {
+        --text-primary: #e2e8f0;
+        --text-secondary: #94a3b8;
+        --accent: #60a5fa;
+        --border-color: #334155;
+        --bg-page: #0b1120;
+        --bg-sheet: #0f172a;
+        --bg-code: #1e293b;
+        --shadow-sheet: 0 4px 24px rgba(0, 0, 0, 0.45);
+        --toggle-bg: #1e293b;
+        --toggle-hover: #334155;
+        color-scheme: dark;
+      }
+    }
+
+    :root[data-theme="dark"] {
+      --text-primary: #e2e8f0;
+      --text-secondary: #94a3b8;
+      --accent: #60a5fa;
+      --border-color: #334155;
+      --bg-page: #0b1120;
+      --bg-sheet: #0f172a;
+      --bg-code: #1e293b;
+      --shadow-sheet: 0 4px 24px rgba(0, 0, 0, 0.45);
+      --toggle-bg: #1e293b;
+      --toggle-hover: #334155;
+      color-scheme: dark;
     }
 
     * {
@@ -31,14 +76,80 @@
       line-height: 1.42;
       font-size: 10pt;
       -webkit-font-smoothing: antialiased;
+      transition: background-color 0.2s ease, color 0.2s ease;
     }
 
     .page-container {
+      position: relative;
       max-width: 210mm;
       margin: 24px auto;
       background: var(--bg-sheet);
       padding: 14mm 16mm;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+      box-shadow: var(--shadow-sheet);
+      transition: background-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .theme-toggle {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      width: 32px;
+      height: 32px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      background: var(--toggle-bg);
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+    }
+
+    .theme-toggle:hover {
+      background: var(--toggle-hover);
+      color: var(--text-primary);
+    }
+
+    .theme-toggle:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+
+    .theme-toggle svg {
+      width: 16px;
+      height: 16px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .theme-toggle .icon-sun {
+      display: none;
+    }
+
+    .theme-toggle .icon-moon {
+      display: block;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) .theme-toggle .icon-sun {
+        display: block;
+      }
+
+      :root:not([data-theme="light"]) .theme-toggle .icon-moon {
+        display: none;
+      }
+    }
+
+    :root[data-theme="dark"] .theme-toggle .icon-sun {
+      display: block;
+    }
+
+    :root[data-theme="dark"] .theme-toggle .icon-moon {
+      display: none;
     }
 
     header {
@@ -170,15 +281,48 @@
     code {
       font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
       font-size: 8.6pt;
-      background: #f1f5f9;
+      background: var(--bg-code);
       padding: 0 3px;
       border-radius: 3px;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      body,
+      .page-container,
+      .theme-toggle {
+        transition: none;
+      }
+    }
+
+    @media screen and (max-width: 841px) {
+        body {
+        background-color: var(--bg-sheet);
+        }
+
+        .page-container {
+        max-width: 100%;
+        margin: 0;
+        box-shadow: none;
+        }
     }
 
     @media print {
       @page {
         size: A4;
         margin: 12mm 14mm;
+      }
+
+      :root,
+      :root[data-theme="dark"],
+      :root:not([data-theme="light"]) {
+        --text-primary: #1a202c;
+        --text-secondary: #4a5568;
+        --accent: #1e3a8a;
+        --border-color: #cbd5e1;
+        --bg-page: #ffffff;
+        --bg-sheet: #ffffff;
+        --bg-code: #f1f5f9;
+        color-scheme: light;
       }
 
       body {
@@ -194,6 +338,10 @@
         box-shadow: none;
       }
 
+      .theme-toggle {
+        display: none !important;
+      }
+
       a {
         color: var(--text-primary) !important;
         text-decoration: none !important;
@@ -203,6 +351,16 @@
 </head>
 <body>
   <div class="page-container">
+    <button type="button" id="theme-toggle" class="theme-toggle" aria-label="Toggle color theme" title="Toggle color theme">
+      <svg class="icon-sun" viewBox="0 0 24 24" aria-hidden="true">
+        <circle cx="12" cy="12" r="4"></circle>
+        <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"></path>
+      </svg>
+      <svg class="icon-moon" viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+      </svg>
+    </button>
+
     <header>
       <div class="header-left">
         <h1>Arseny Hofman</h1>
@@ -361,5 +519,41 @@
       </ul>
     </section>
   </div>
+
+  <script>
+    (function () {
+      var btn = document.getElementById('theme-toggle');
+      var mq = window.matchMedia('(prefers-color-scheme: dark)');
+
+      function getEffectiveTheme() {
+        var explicit = document.documentElement.getAttribute('data-theme');
+        if (explicit === 'light' || explicit === 'dark') return explicit;
+        return mq.matches ? 'dark' : 'light';
+      }
+
+      function updateLabel() {
+        var isDark = getEffectiveTheme() === 'dark';
+        var label = isDark ? 'Switch to light theme' : 'Switch to dark theme';
+        btn.setAttribute('aria-label', label);
+        btn.setAttribute('title', label);
+      }
+
+      btn.addEventListener('click', function () {
+        var next = getEffectiveTheme() === 'dark' ? 'light' : 'dark';
+        var system = mq.matches ? 'dark' : 'light';
+        if (next === system) {
+          document.documentElement.removeAttribute('data-theme');
+          try { localStorage.removeItem('cv-theme'); } catch (e) {}
+        } else {
+          document.documentElement.setAttribute('data-theme', next);
+          try { localStorage.setItem('cv-theme', next); } catch (e) {}
+        }
+        updateLabel();
+      });
+
+      mq.addEventListener('change', updateLabel);
+      updateLabel();
+    })();
+  </script>
 </body>
 </html>
